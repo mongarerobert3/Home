@@ -8,7 +8,12 @@ def show_tenant_details():
 		for widget in right_frame.winfo_children():
 			widget.destroy()
 
-		ttk.Label(right_frame, text=("Dennis Kiribwa"))
+		query = 'SELECT * FROM tenants'
+		cursor.execute(query)
+		fetched_tenants = cursor.fetchall()
+
+		for data in fetched_tenants:
+			tenant_table.insert('', 'end', values=data)
 
 
 def show_add_form():
@@ -17,7 +22,6 @@ def show_add_form():
 		for widget in right_frame.winfo_children():
 				widget.destroy()
 				
-		# Add form elements here (labels, entry fields, buttons, etc.)
 		ttk.Label(right_frame, text="Name:", font=("Arial", 14, "bold")).grid(row=0, column=0, padx=10, pady=10)
 		name_entry = ttk.Entry(right_frame, font=("Arial", 14))
 		name_entry.grid(row=0, column=1, padx=10, pady=10)
@@ -55,6 +59,14 @@ def show_add_form():
 		security_entry.grid(row=8, column=1, padx=10, pady=10)
 
 		ttk.Label(right_frame, text="Emergency Contact:", font=("Arial", 14, "bold")).grid(row=9, column=0, padx=10, pady=10)
+		Emergency_Contact_entry = ttk.Entry(right_frame, font=("Arial", 14))
+		Emergency_Contact_entry.grid(row=9, column=1, padx=10, pady=10)
+
+		ttk.Label(right_frame, text="Nat Id:", font=("Arial", 14, "bold")).grid(row=9, column=0, padx=10, pady=10)
+		Emergency_Contact_entry = ttk.Entry(right_frame, font=("Arial", 14))
+		Emergency_Contact_entry.grid(row=9, column=1, padx=10, pady=10)
+
+		ttk.Label(right_frame, text="Room No:", font=("Arial", 14, "bold")).grid(row=9, column=0, padx=10, pady=10)
 		Emergency_Contact_entry = ttk.Entry(right_frame, font=("Arial", 14))
 		Emergency_Contact_entry.grid(row=9, column=1, padx=10, pady=10)
 
@@ -120,24 +132,68 @@ left_frame.place(x=100, y=50)
 addStudentButton = ttk.Button(left_frame, text='Add Tenant', width=25, command=show_add_form)
 addStudentButton.grid(row=1, column=2, pady=20)
 
-addStudentButton = ttk.Button(left_frame, text='Tenant Details', width=25, command=show_tenant_details)
-addStudentButton.grid(row=2, column=2, pady=20)
+tenant_details = ttk.Button(left_frame, text='Tenant Details', width=25, command=show_tenant_details)
+tenant_details.grid(row=2, column=2, pady=20)
 
-addStudentButton = ttk.Button(left_frame, text='Edit Tenant', width=25)
-addStudentButton.grid(row=3, column=2, pady=20)
+edit_tenant = ttk.Button(left_frame, text='Edit Tenant', width=25)
+edit_tenant.grid(row=3, column=2, pady=20)
 
-addStudentButton = ttk.Button(left_frame, text='Remove Tenant', width=25)
-addStudentButton.grid(row=4, column=2, pady=20)
+remove_tenant = ttk.Button(left_frame, text='Remove Tenant', width=25)
+remove_tenant.grid(row=4, column=2, pady=20)
 
-addStudentButton = ttk.Button(left_frame, text='Manage Payments', width=25)
-addStudentButton.grid(row=5, column=2, pady=20)
+manage_payments = ttk.Button(left_frame, text='Manage Payments', width=25)
+manage_payments.grid(row=5, column=2, pady=20)
 
-addStudentButton = ttk.Button(left_frame, text='Add Student', width=25)
-addStudentButton.grid(row=6, column=2, pady=20)
 
 right_frame = Frame(window)
 right_frame.configure(background="grey",pady=20, padx=200)
 right_frame.place(x=350, y=80, width=820, height=600)
+
+ScrollbarX = Scrollbar(right_frame, orient=HORIZONTAL)
+ScrollbarY = Scrollbar(right_frame, orient=VERTICAL)
+
+tenant_table = ttk.Treeview(right_frame, columns=('Nat Id', 'Room No', 'Name','Email', 'Rent Bal', 'Mob No',
+						  'D.O.B', 'Added Day', 'Added Time' ),
+			     xscrollcommand = ScrollbarX.set,
+					 yscrollcommand=ScrollbarY.set)
+
+ScrollbarX.config(command=tenant_table.xview)
+ScrollbarY.config(command=tenant_table.yview)
+
+ScrollbarX.pack(side=BOTTOM, fill=X)
+ScrollbarY.pack(side=RIGHT, fill=Y)
+
+tenant_table.pack(fill=BOTH, expand=1)
+
+
+tenant_table.heading("Nat Id", text='Nat ID')
+tenant_table.heading("Room No", text='Room No')
+tenant_table.heading("Name", text='Name')
+tenant_table.heading("Email", text='Email')
+tenant_table.heading("Rent Bal", text='Rent Bal')
+tenant_table.heading("Mob No", text='Mobile NO')
+tenant_table.heading('D.O.B', text='D.O.B')
+tenant_table.heading('Added Day', text='Added Day')
+tenant_table.heading('Added Time', text='Added Time')
+
+tenant_table.column("Nat Id", width=50, anchor=CENTER)
+tenant_table.column("Room No", width=50, anchor=CENTER)
+tenant_table.column("Name", width=300, anchor=CENTER)
+tenant_table.heading("Email", text='Email')
+tenant_table.column("Rent Bal", width=50, anchor=CENTER)
+tenant_table.column("Mob No", width=200, anchor=CENTER)
+tenant_table.column('D.O.B', width=100, anchor=CENTER)
+tenant_table.column('Added Day', width=200, anchor=CENTER)
+tenant_table.column('Added Time', width=200, anchor=CENTER)
+
+style = ttk.Style()
+
+style.configure('Treeview', rowheight=30, font=('arial', 12, 'bold'),
+		background='white', fieldbackground='white')
+style.configure('Treeview.Heading', font=('arial', 14, 'bold'), foreground='red')
+
+tenant_table.config(show='headings')
+
 
 window.mainloop()
 
